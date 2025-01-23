@@ -3,10 +3,9 @@ import Aplicacion.MODELO.CONEXION.Conexion;
 import Aplicacion.MODELO.DAO.IDAO;
 import Aplicacion.MODELO.DAO.INVENTARIOVEHICULO.InventarioVehiculo;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class EmpleadoDAO implements IDAO {
@@ -31,22 +30,26 @@ public class EmpleadoDAO implements IDAO {
         Connection con = conexionInst.getConexion();
 
         var sql = "insert into empleado(cedula, nombre, apellido, fecha_nacimiento, direccion, telefono, fecha_contratacion, rol, hora_inicio, hora_fin)\n" +
-                "values(?,?,?,?,?,?,?,?,?,?)";
+                "values(?,?,?,?,?,?,?,?::rolempleado,?,?)";
 
         try {
 
             ps = con.prepareStatement(sql);
 
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate fechaNacimiento = LocalDate.parse(empleado.getFecha_nacimiento(), formatter);
+            LocalDate fechaContratacion = LocalDate.parse(empleado.getFecha_contratacion(), formatter);
+
             ps.setInt(1, empleado.getCedula());
             ps.setString(2, empleado.getNombre());
             ps.setString(3, empleado.getApellido());
-            ps.setString(4, empleado.getFecha_nacimiento());
+            ps.setDate(4, Date.valueOf(fechaNacimiento));
             ps.setString(5, empleado.getDireccion());
             ps.setString(6, empleado.getTelefono());
-            ps.setString(7, empleado.getFecha_contratacion());
+            ps.setDate(7, Date.valueOf(fechaContratacion));
             ps.setString(8, empleado.getRol());
-            ps.setString(9, empleado.getHora_inicio());
-            ps.setString(10, empleado.getHora_fin());
+            ps.setTime(9, Time.valueOf(empleado.getHora_inicio()));
+            ps.setTime(10, Time.valueOf(empleado.getHora_fin()));
 
             ps.execute();
             return true;
