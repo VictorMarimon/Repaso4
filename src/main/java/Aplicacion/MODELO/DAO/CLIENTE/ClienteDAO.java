@@ -4,9 +4,12 @@ import Aplicacion.MODELO.CONEXION.Conexion;
 import Aplicacion.MODELO.DAO.IDAO;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class ClienteDAO implements IDAO {
@@ -39,10 +42,13 @@ public class ClienteDAO implements IDAO {
 
             ps = con.prepareStatement(sql);
 
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate fechaNacimiento = LocalDate.parse(cliente.getFecha_nacimiento(), formatter);
+
             ps.setInt(1, cliente.getCedula());
             ps.setString(2, cliente.getNombre());
             ps.setString(3, cliente.getApellido());
-            ps.setString(4, cliente.getFecha_nacimiento());
+            ps.setDate(4, Date.valueOf(fechaNacimiento));
             ps.setString(5, cliente.getDireccion());
             ps.setString(6, cliente.getTelefono());
 
